@@ -385,8 +385,10 @@ function getDelay(nextRun: Date) {
   return Math.max(0, delay);
 }
 
-function nowWithoutMs(): Date{
-  const date = new Date();
-  date.setMilliseconds(0);
-  return date;
+// Truncate on the epoch value, not with setMilliseconds(): that is a local-time
+// setter, and inside a DST fall-back hour it re-resolves the wall-clock time to
+// the earlier of the two instants, moving "now" back by the DST shift whenever
+// the process TZ observes DST.
+export function nowWithoutMs(): Date{
+  return new Date(Math.floor(Date.now() / 1000) * 1000);
 }
